@@ -1,0 +1,331 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>需求 AI Agent - 研发团队需求澄清与任务拆解助手</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="app">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-header">
+        <h1>🧠 需求 AI Agent</h1>
+        <p class="subtitle">研发团队需求澄清与任务拆解助手</p>
+      </div>
+
+      <div class="sidebar-section">
+        <button class="btn btn-primary btn-block" id="btnNewProject">+ 新建项目</button>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>项目列表</h3>
+        <div id="projectList" class="project-list">
+          <div class="empty-state">暂无项目，点击上方按钮创建</div>
+        </div>
+      </div>
+
+      <div class="sidebar-section config-section">
+        <h3>API 配置</h3>
+        <div class="config-form">
+          <select id="llmProvider">
+            <option value="openai">OpenAI</option>
+            <option value="anthropic">Anthropic</option>
+          </select>
+          <input type="password" id="apiKeyInput" placeholder="API Key (可选)" />
+          <input type="text" id="modelInput" placeholder="模型名 (可选)" />
+          <button class="btn btn-sm" id="btnSaveConfig">保存配置</button>
+          <div id="configStatus" class="config-status"></div>
+        </div>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Welcome Screen -->
+      <div id="welcomeScreen" class="screen active">
+        <div class="welcome-content">
+          <div class="welcome-icon">🧠</div>
+          <h2>欢迎使用需求 AI Agent</h2>
+          <p>自动处理"需求不清、沟通反复、任务拆解慢"的痛点</p>
+          <div class="welcome-features">
+            <div class="feature-card">
+              <div class="feature-icon">📄</div>
+              <h4>多源输入</h4>
+              <p>读取会议纪要、聊天记录和需求文档</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">🔍</div>
+              <h4>智能分析</h4>
+              <p>自动提炼核心目标、缺失信息、风险点和待确认问题</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">📋</div>
+              <h4>结构化输出</h4>
+              <p>生成结构化PRD、研发任务拆分和跟进提醒</p>
+            </div>
+            <div class="feature-card">
+              <div class="feature-icon">💬</div>
+              <h4>主动追问</h4>
+              <p>信息不足时自动追问补全关键字段</p>
+            </div>
+          </div>
+          <button class="btn btn-primary btn-lg" id="btnStartNew">开始使用 →</button>
+        </div>
+      </div>
+
+      <!-- Project Detail Screen -->
+      <div id="projectScreen" class="screen">
+        <div class="project-header">
+          <div>
+            <h2 id="projectName">项目名称</h2>
+            <p id="projectDesc" class="project-desc">项目描述</p>
+          </div>
+          <div class="header-actions">
+            <span id="projectStatus" class="status-badge">进行中</span>
+          </div>
+        </div>
+
+        <!-- Pipeline Steps -->
+        <div class="pipeline">
+          <div class="pipeline-step" data-step="1">
+            <div class="step-number">1</div>
+            <div class="step-info">
+              <h4>输入文档</h4>
+              <p>添加会议纪要、聊天记录、需求文档</p>
+            </div>
+            <div class="step-status" id="step1Status">待处理</div>
+          </div>
+          <div class="pipeline-step" data-step="2">
+            <div class="step-number">2</div>
+            <div class="step-info">
+              <h4>需求分析</h4>
+              <p>提炼目标、识别风险、发现缺失信息</p>
+            </div>
+            <div class="step-status" id="step2Status">待处理</div>
+          </div>
+          <div class="pipeline-step" data-step="3">
+            <div class="step-number">3</div>
+            <div class="step-info">
+              <h4>PRD 生成</h4>
+              <p>生成结构化产品需求文档</p>
+            </div>
+            <div class="step-status" id="step3Status">待处理</div>
+          </div>
+          <div class="pipeline-step" data-step="4">
+            <div class="step-number">4</div>
+            <div class="step-info">
+              <h4>任务拆解</h4>
+              <p>细化为可执行的研发任务</p>
+            </div>
+            <div class="step-status" id="step4Status">待处理</div>
+          </div>
+        </div>
+
+        <!-- Tab Content -->
+        <div class="tabs">
+          <button class="tab active" data-tab="documents">📄 文档 (<span id="docCount">0</span>)</button>
+          <button class="tab" data-tab="analysis">🔍 分析</button>
+          <button class="tab" data-tab="prd">📋 PRD</button>
+          <button class="tab" data-tab="tasks">✅ 任务</button>
+        </div>
+
+        <!-- Documents Tab -->
+        <div class="tab-content active" id="tab-documents">
+          <div class="section-header">
+            <h3>输入文档</h3>
+            <button class="btn btn-primary" id="btnAddDoc">+ 添加文档</button>
+          </div>
+
+          <div id="docForm" class="doc-form hidden">
+            <h4>新建文档</h4>
+            <div class="form-group">
+              <label>文档类型</label>
+              <select id="docType">
+                <option value="meeting_minutes">会议纪要</option>
+                <option value="chat_record">聊天记录</option>
+                <option value="requirement_doc">需求文档</option>
+                <option value="other">其他</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>文档标题</label>
+              <input type="text" id="docTitle" placeholder="输入文档标题" />
+            </div>
+            <div class="form-group">
+              <label>文档内容</label>
+              <textarea id="docContent" rows="8" placeholder="粘贴文档内容...&#10;&#10;支持：&#10;- 会议纪要: 包含讨论、决定、待办事项&#10;- 聊天记录: 包含问答、讨论、关键决策&#10;- 需求文档: 包含功能描述、验收标准"></textarea>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" id="btnSaveDoc">保存文档</button>
+              <button class="btn btn-ghost" id="btnCancelDoc">取消</button>
+            </div>
+          </div>
+
+          <!-- Sample Data Buttons -->
+          <div class="sample-buttons">
+            <button class="btn btn-sm btn-sample" data-sample="meeting">📝 加载示例会议纪要</button>
+            <button class="btn btn-sm btn-sample" data-sample="chat">💬 加载示例聊天记录</button>
+            <button class="btn btn-sm btn-sample" data-sample="requirement">📄 加载示例需求文档</button>
+          </div>
+
+          <div id="docList" class="doc-list">
+            <div class="empty-state">暂无文档，请添加或加载示例</div>
+          </div>
+        </div>
+
+        <!-- Analysis Tab -->
+        <div class="tab-content" id="tab-analysis">
+          <div class="section-header">
+            <h3>需求分析</h3>
+            <button class="btn btn-primary" id="btnRunAnalysis">🚀 运行分析</button>
+          </div>
+
+          <div id="analysisResult" class="analysis-result hidden">
+            <div class="analysis-summary card">
+              <h4>分析摘要</h4>
+              <p id="analysisSummary"></p>
+            </div>
+
+            <div class="analysis-grid">
+              <div class="card">
+                <h4>🎯 核心目标</h4>
+                <ul id="goalsList"></ul>
+              </div>
+              <div class="card">
+                <h4>⚠️ 风险点</h4>
+                <ul id="risksList"></ul>
+              </div>
+              <div class="card">
+                <h4>❓ 缺失信息</h4>
+                <ul id="missingList"></ul>
+              </div>
+              <div class="card">
+                <h4>💬 待确认问题</h4>
+                <ul id="questionsList"></ul>
+              </div>
+            </div>
+
+            <!-- Clarification Section -->
+            <div id="clarificationSection" class="clarification-section hidden">
+              <h4>✏️ 补充信息</h4>
+              <p class="text-muted">Agent 检测到信息不足，请回答以下问题以完善需求：</p>
+              <div id="clarificationForm"></div>
+              <button class="btn btn-primary" id="btnSubmitClarification">提交补充信息</button>
+            </div>
+          </div>
+
+          <div id="analysisEmpty" class="empty-state">
+            选择文档后点击"运行分析"开始需求分析
+          </div>
+        </div>
+
+        <!-- PRD Tab -->
+        <div class="tab-content" id="tab-prd">
+          <div class="section-header">
+            <h3>PRD 文档</h3>
+            <button class="btn btn-primary" id="btnGeneratePRD">📋 生成 PRD</button>
+          </div>
+
+          <div id="prdResult" class="prd-result hidden">
+            <div class="prd-header">
+              <h2 id="prdTitle"></h2>
+              <span class="version-badge" id="prdVersion"></span>
+            </div>
+
+            <div class="card">
+              <h4>背景与目标</h4>
+              <p id="prdBackground"></p>
+              <ul id="prdGoals"></ul>
+            </div>
+
+            <div class="card">
+              <h4>范围</h4>
+              <div class="scope-grid">
+                <div>
+                  <h5>In Scope</h5>
+                  <ul id="prdScopeIn"></ul>
+                </div>
+                <div>
+                  <h5>Out of Scope</h5>
+                  <ul id="prdScopeOut"></ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4>功能需求</h4>
+              <div id="prdFunctionalReqs"></div>
+            </div>
+
+            <div class="card">
+              <h4>非功能需求</h4>
+              <div id="prdNonFunctionalReqs"></div>
+            </div>
+
+            <div class="card">
+              <h4>用户故事</h4>
+              <div id="prdUserStories"></div>
+            </div>
+
+            <div class="card">
+              <h4>风险与待处理问题</h4>
+              <ul id="prdRisks"></ul>
+              <ul id="prdIssues"></ul>
+            </div>
+          </div>
+
+          <div id="prdEmpty" class="empty-state">
+            完成分析后点击"生成 PRD"生成结构化需求文档
+          </div>
+        </div>
+
+        <!-- Tasks Tab -->
+        <div class="tab-content" id="tab-tasks">
+          <div class="section-header">
+            <h3>研发任务拆解</h3>
+            <button class="btn btn-primary" id="btnBreakTasks">✅ 拆解任务</button>
+          </div>
+
+          <div id="taskResult" class="task-result hidden">
+            <div class="task-summary card">
+              <h4>任务概览</h4>
+              <p id="taskSummary"></p>
+              <div class="task-metrics">
+                <div class="metric">
+                  <span class="metric-value" id="taskTotalCount">0</span>
+                  <span class="metric-label">任务数</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-value" id="taskTotalHours">0</span>
+                  <span class="metric-label">预估小时</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="card">
+              <h4>里程碑</h4>
+              <div id="milestonesList"></div>
+            </div>
+
+            <div id="tasksList" class="tasks-list"></div>
+          </div>
+
+          <div id="taskEmpty" class="empty-state">
+            生成 PRD 后点击"拆解任务"自动拆分研发任务
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay hidden">
+    <div class="loading-spinner"></div>
+    <p id="loadingMessage">处理中...</p>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

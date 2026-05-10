@@ -1,0 +1,9 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(taskkill //F //IM node.exe)",
+      "Bash(rm -f d:/agent/项目/1/backend/data.json)",
+      "Bash(node backend/server.js)"
+    ]
+  }
+}

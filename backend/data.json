@@ -1,0 +1,416 @@
+{
+  "nextId": 9,
+  "projects": [
+    {
+      "id": 1,
+      "name": "用户权限系统升级",
+      "description": "从角色级权限 → RBAC+ABAC 混合细粒度权限控制",
+      "status": "active",
+      "createdAt": "2026-05-10T05:23:03.791Z",
+      "updatedAt": "2026-05-10T05:23:03.791Z"
+    },
+    {
+      "id": 8,
+      "name": "新项目",
+      "description": "",
+      "status": "active",
+      "createdAt": "2026-05-10T05:29:56.938Z",
+      "updatedAt": "2026-05-10T05:29:56.938Z"
+    }
+  ],
+  "documents": [
+    {
+      "id": 2,
+      "projectId": 1,
+      "title": "需求评审会议 - 权限系统升级",
+      "content": "# 需求评审会议纪要\n\n日期: 2026-04-15\n参会人员: 张三(产品), 李四(研发), 王五(测试), 赵六(架构)\n\n## 议题\n1. 用户权限系统升级方案评审\n2. 细粒度权限控制需求讨论\n3. 排期和资源评估\n\n## 讨论内容\n### 权限系统现状\n当前权限模型只支持角色级别控制，无法满足业务线自定义权限的需求。\n部分业务线需要精确到按钮级别的权限控制。\n\n### 需求确认\n- 需要支持自定义角色创建\n- 需要支持资源级别的权限配置\n- 需要兼容现有权限体系\n- 权限变更需要有审计日志\n\n### 技术方案\n赵六提出可以采用 RBAC + ABAC 混合方案：\nRBAC 层保留现有角色权限模型，ABAC 层新增属性级权限判断，\n通过策略引擎统一管理权限规则。\n\n### 决策\n- 确认采用 RBAC + ABAC 混合方案\n- 第一期先实现 RBAC 增强 + 基础 ABAC 能力\n- 需要预先定义好权限模型的数据结构\n\n### 待办事项\n- 张三: 输出详细的权限配置界面原型 (周五前)\n- 赵六: 输出 ABAC 策略引擎的技术方案 (下周三前)\n- 李四: 评估 DB 改造工作量\n\n## 遗留问题\n1. 现有用户数据迁移方案未定\n2. 权限缓存的失效策略需要进一步讨论",
+      "docType": "meeting_minutes",
+      "source": "manual",
+      "createdAt": "2026-05-10T05:23:03.801Z"
+    },
+    {
+      "id": 3,
+      "projectId": 1,
+      "title": "权限系统升级 - 产品需求 v1.0",
+      "content": "# 用户权限系统升级需求文档\n\n## 1. 项目背景\n当前权限系统仅支持角色级控制，业务线需要按钮/API 级别的细粒度权限。\n\n## 2. 目标\n- 建设细粒度权限控制系统，支持业务线自定义配置\n- 权限变更实时生效\n- 完整审计追溯\n\n## 3. 功能需求\n\n### FR-001: 自定义角色管理\n支持创建自定义角色，配置不同权限组合，包括菜单权限、按钮权限和 API 权限\n\n### FR-002: 资源级权限配置\n支持按菜单、按钮、API 等资源粒度配置权限，支持批量授权和回收\n\n### FR-003: 审计日志\n记录所有权限变更操作，包括创建、修改、删除、授权，支持按时间/操作人/资源筛选\n\n### FR-004: 权限模板\n提供权限模板快速配置，减少重复配置工作\n\n## 4. 非功能需求\n- NFR-001: 权限变更实时生效，端到端延迟不超过 3 秒\n- NFR-002: 支持 10 万级并发用户\n- NFR-003: 权限校验接口 P99 < 50ms\n\n## 5. 约束条件\n- 必须兼容现有权限体系，不能影响线上用户\n- 权限数据需要支持冷热分离存储\n\n## 6. 验收标准\n- 用户可创建自定义角色并在 3 秒内生效\n- 管理员可配置按钮/API 级别权限\n- 所有权限变更可审计追溯",
+      "docType": "requirement_doc",
+      "source": "manual",
+      "createdAt": "2026-05-10T05:23:03.805Z"
+    },
+    {
+      "id": 4,
+      "projectId": 1,
+      "title": "企微讨论 - 权限系统技术细节",
+      "content": "张三: @所有人 关于权限系统升级，大家看下技术方案\n李四: 看了赵六的 RBAC+ABAC 方案，整体可行\n王五: 我担心权限缓存这块，如果策略复杂，缓存命中率可能很低\n赵六: 可以用多级缓存，先查角色权限再查属性权限\n李四: 性能方面呢？每次请求都要做两次判断的话\n赵六: 可以预计算，在登录时生成用户的完整权限快照\n张三: 这样权限变更是不是就不实时了？\n赵六: 需要加个权限刷新机制，管理员修改权限后主动推送刷新\n李四: WebSocket 推送方案？\n赵六: 对，push + 客户端轮询兜底\n张三: OK，这个方案可以。@李四 数据迁移方案什么时候出？\n李四: 预计下周三，需要先确认支持哪些权限类型\n张三: 先把第一期需要的列出来，后期可扩展就行",
+      "docType": "chat_record",
+      "source": "manual",
+      "createdAt": "2026-05-10T05:23:03.807Z"
+    }
+  ],
+  "analyses": [
+    {
+      "id": 5,
+      "projectId": 1,
+      "documentIds": [
+        2,
+        3,
+        4
+      ],
+      "status": "completed",
+      "result": {
+        "summary": "分析了 3 个文档，共 2846 字内容。识别到 3 个核心目标、2 个风险点、0 项信息缺失。信息较为完整。",
+        "core_goals": [
+          {
+            "description": "自定义角色管理",
+            "priority": "high"
+          },
+          {
+            "description": "资源级权限配置",
+            "priority": "high"
+          },
+          {
+            "description": "审计日志",
+            "priority": "high"
+          }
+        ],
+        "missing_info": [],
+        "risk_points": [
+          {
+            "risk": "需求描述不够具体，缺少明确的功能点清单",
+            "severity": "high",
+            "mitigation": "建议与需求方逐条对齐功能清单"
+          },
+          {
+            "risk": "需求可能存在范围蔓延风险",
+            "severity": "medium",
+            "mitigation": "建议在 PRD 中定义明确的 In/Out Scope"
+          }
+        ],
+        "pending_questions": [
+          {
+            "question": "该需求的优先级和期望上线时间是什么？",
+            "target": "产品经理",
+            "reason": "影响研发排期和资源分配决策"
+          },
+          {
+            "question": "是否有对其他团队或系统的依赖？",
+            "target": "技术负责人",
+            "reason": "影响技术方案设计和开发计划"
+          },
+          {
+            "question": "需求的验收标准和成功指标是什么？",
+            "target": "产品经理",
+            "reason": "明确可量化的验收标准以避免交付偏差"
+          }
+        ],
+        "needs_clarification": false
+      },
+      "createdAt": "2026-05-10T05:23:03.810Z"
+    }
+  ],
+  "prds": [
+    {
+      "id": 6,
+      "projectId": 1,
+      "analysisId": 5,
+      "result": {
+        "title": "用户权限系统升级 - 产品需求文档",
+        "version": "1.0",
+        "background": "项目 用户权限系统升级 的需求文档。分析了 3 个文档，共 2846 字内容。识别到 3 个核心目标、2 个风险点、0 项信息缺失。信息较为完整。",
+        "goals": [
+          {
+            "description": "自定义角色管理",
+            "priority": "high"
+          },
+          {
+            "description": "资源级权限配置",
+            "priority": "high"
+          },
+          {
+            "description": "审计日志",
+            "priority": "high"
+          }
+        ],
+        "scope_in": [
+          "自定义角色管理",
+          "资源级权限配置",
+          "审计日志"
+        ],
+        "scope_out": [
+          "待与产品方确认"
+        ],
+        "functional_requirements": [
+          {
+            "id": "FR-001",
+            "title": "自定义角色管理",
+            "description": "实现目标：自定义角色管理。具体细节需进一步确认。",
+            "priority": "P1"
+          },
+          {
+            "id": "FR-002",
+            "title": "资源级权限配置",
+            "description": "实现目标：资源级权限配置。具体细节需进一步确认。",
+            "priority": "P1"
+          },
+          {
+            "id": "FR-003",
+            "title": "审计日志",
+            "description": "实现目标：审计日志。具体细节需进一步确认。",
+            "priority": "P1"
+          }
+        ],
+        "non_functional_requirements": [
+          {
+            "id": "NFR-001",
+            "title": "系统可用性",
+            "description": "系统需保持高可用",
+            "metric": "可用性 > 99.9%"
+          },
+          {
+            "id": "NFR-002",
+            "title": "响应性能",
+            "description": "页面响应需在可接受范围内",
+            "metric": "核心接口 < 200ms"
+          }
+        ],
+        "user_stories": [
+          {
+            "id": "US-001",
+            "as_a": "用户",
+            "i_want": "自定义角色管理",
+            "so_that": "完成业务目标",
+            "acceptance_criteria": [
+              "自定义角色管理 功能可正常使用",
+              "覆盖主要业务场景",
+              "异常情况有合理处理"
+            ]
+          },
+          {
+            "id": "US-002",
+            "as_a": "用户",
+            "i_want": "资源级权限配置",
+            "so_that": "完成业务目标",
+            "acceptance_criteria": [
+              "资源级权限配置 功能可正常使用",
+              "覆盖主要业务场景",
+              "异常情况有合理处理"
+            ]
+          },
+          {
+            "id": "US-003",
+            "as_a": "用户",
+            "i_want": "审计日志",
+            "so_that": "完成业务目标",
+            "acceptance_criteria": [
+              "审计日志 功能可正常使用",
+              "覆盖主要业务场景",
+              "异常情况有合理处理"
+            ]
+          }
+        ],
+        "risks": [
+          {
+            "risk": "需求描述不够具体，缺少明确的功能点清单",
+            "severity": "high",
+            "mitigation": "建议与需求方逐条对齐功能清单"
+          },
+          {
+            "risk": "需求可能存在范围蔓延风险",
+            "severity": "medium",
+            "mitigation": "建议在 PRD 中定义明确的 In/Out Scope"
+          }
+        ],
+        "open_issues": [
+          "该需求的优先级和期望上线时间是什么？",
+          "是否有对其他团队或系统的依赖？",
+          "需求的验收标准和成功指标是什么？"
+        ]
+      },
+      "version": "1.0",
+      "createdAt": "2026-05-10T05:23:03.815Z"
+    }
+  ],
+  "taskBreakdowns": [
+    {
+      "id": 7,
+      "projectId": 1,
+      "prdId": 6,
+      "result": {
+        "project_name": "用户权限系统升级",
+        "summary": "已将PRD拆分为 4 个任务，预估总工时 72 小时。涵盖设计、开发、测试全流程。",
+        "total_estimated_hours": 72,
+        "milestones": [
+          {
+            "name": "M1-需求确认",
+            "description": "完成需求澄清和 PRD 评审"
+          },
+          {
+            "name": "M2-技术设计",
+            "description": "完成技术方案设计和评审"
+          },
+          {
+            "name": "M3-开发完成",
+            "description": "完成所有功能开发"
+          },
+          {
+            "name": "M4-测试验收",
+            "description": "完成测试并交付"
+          }
+        ],
+        "tasks": [
+          {
+            "id": "T-001",
+            "title": "自定义角色管理",
+            "description": "实现目标：自定义角色管理。具体细节需进一步确认。",
+            "priority": "P1",
+            "status": "todo",
+            "estimated_hours": 16,
+            "phase": "开发",
+            "dependencies": [],
+            "sub_tasks": [
+              {
+                "id": "ST-001",
+                "title": "设计评审",
+                "description": "完成自定义角色管理的技术方案设计和评审",
+                "estimated_hours": 4,
+                "assignee_role": "技术负责人",
+                "dependencies": []
+              },
+              {
+                "id": "ST-002",
+                "title": "编码实现",
+                "description": "实现自定义角色管理",
+                "estimated_hours": 8,
+                "assignee_role": "研发工程师",
+                "dependencies": []
+              },
+              {
+                "id": "ST-003",
+                "title": "自测联调",
+                "description": "完成自定义角色管理的自测和联调",
+                "estimated_hours": 4,
+                "assignee_role": "研发工程师",
+                "dependencies": []
+              }
+            ]
+          },
+          {
+            "id": "T-002",
+            "title": "资源级权限配置",
+            "description": "实现目标：资源级权限配置。具体细节需进一步确认。",
+            "priority": "P1",
+            "status": "todo",
+            "estimated_hours": 16,
+            "phase": "开发",
+            "dependencies": [
+              "T-001"
+            ],
+            "sub_tasks": [
+              {
+                "id": "ST-004",
+                "title": "设计评审",
+                "description": "完成资源级权限配置的技术方案设计和评审",
+                "estimated_hours": 4,
+                "assignee_role": "技术负责人",
+                "dependencies": []
+              },
+              {
+                "id": "ST-005",
+                "title": "编码实现",
+                "description": "实现资源级权限配置",
+                "estimated_hours": 8,
+                "assignee_role": "研发工程师",
+                "dependencies": []
+              },
+              {
+                "id": "ST-006",
+                "title": "自测联调",
+                "description": "完成资源级权限配置的自测和联调",
+                "estimated_hours": 4,
+                "assignee_role": "研发工程师",
+                "dependencies": []
+              }
+            ]
+          },
+          {
+            "id": "T-003",
+            "title": "审计日志",
+            "description": "实现目标：审计日志。具体细节需进一步确认。",
+            "priority": "P1",
+            "status": "todo",
+            "estimated_hours": 16,
+            "phase": "开发",
+            "dependencies": [
+              "T-002"
+            ],
+            "sub_tasks": [
+              {
+                "id": "ST-007",
+                "title": "设计评审",
+                "description": "完成审计日志的技术方案设计和评审",
+                "estimated_hours": 4,
+                "assignee_role": "技术负责人",
+                "dependencies": []
+              },
+              {
+                "id": "ST-008",
+                "title": "编码实现",
+                "description": "实现审计日志",
+                "estimated_hours": 8,
+                "assignee_role": "研发工程师",
+                "dependencies": []
+              },
+              {
+                "id": "ST-009",
+                "title": "自测联调",
+                "description": "完成审计日志的自测和联调",
+                "estimated_hours": 4,
+                "assignee_role": "研发工程师",
+                "dependencies": []
+              }
+            ]
+          },
+          {
+            "id": "T-004",
+            "title": "集成测试与验收",
+            "description": "完成所有功能的集成测试、回归测试和验收测试",
+            "priority": "P1",
+            "status": "todo",
+            "estimated_hours": 24,
+            "phase": "测试",
+            "dependencies": [
+              "T-003"
+            ],
+            "sub_tasks": [
+              {
+                "id": "ST-010",
+                "title": "测试用例编写",
+                "description": "编写集成测试用例",
+                "estimated_hours": 8,
+                "assignee_role": "测试工程师",
+                "dependencies": []
+              },
+              {
+                "id": "ST-011",
+                "title": "集成测试执行",
+                "description": "执行集成测试并记录问题",
+                "estimated_hours": 12,
+                "assignee_role": "测试工程师",
+                "dependencies": []
+              },
+              {
+                "id": "ST-012",
+                "title": "验收测试",
+                "description": "与PM一起完成验收测试",
+                "estimated_hours": 4,
+                "assignee_role": "测试工程师",
+                "dependencies": []
+              }
+            ]
+          }
+        ]
+      },
+      "createdAt": "2026-05-10T05:23:03.818Z"
+    }
+  ]
+}
